@@ -7,7 +7,7 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ selectedCategory, onSelectCategory }: CategoryFilterProps) {
   return (
-    <div className="">
+    <div>
       {/* Horizontal Scrollable Categories */}
       <div className="overflow-x-auto pb-2 -mx-6 px-6 scrollbar-hide">
         <div className="flex gap-2 min-w-max">
