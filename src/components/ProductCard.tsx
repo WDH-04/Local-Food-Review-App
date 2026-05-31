@@ -13,6 +13,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onClick, isFavorite = false, onToggleFavorite }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -33,12 +34,19 @@ export function ProductCard({ product, onClick, isFavorite = false, onToggleFavo
       className="bg-white rounded-[1.5rem] overflow-hidden cursor-pointer border-2 border-[#d4c5a0] transition-all duration-300 hover:border-[#6b8e6f] hover:shadow-xl hover:-translate-y-1 active:scale-[0.98]"
     >
       <div className="aspect-4/3 relative overflow-hidden bg-[#f5f0dc]">
+        {/* Skeleton shimmer while image loads */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-[#f5f0dc] animate-pulse">
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
+          </div>
+        )}
         <ImageWithFallback
           src={product.image}
           alt={product.name}
           className={`w-full h-full object-cover transition-all duration-500 ${
             isHovered ? 'scale-110' : 'scale-100'
-          }`}
+          } ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setImageLoaded(true)}
         />
 
         {/* Top Left Badges */}
