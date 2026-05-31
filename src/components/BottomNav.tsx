@@ -31,7 +31,7 @@ export function BottomNav({ activeTab, onTabChange, userType }: BottomNavProps) 
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#d4c5a0] rounded-t-[1.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-[#d4c5a0] rounded-t-[1.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-50 pb-[env(safe-area-inset-bottom)]">
       <div className="max-w-md mx-auto px-4 py-3">
         <div className="flex items-center justify-around">
           <NavButton tab="home" icon={Home} label="홈" />
