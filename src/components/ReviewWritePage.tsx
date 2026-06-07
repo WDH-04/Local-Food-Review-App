@@ -182,10 +182,15 @@ export function ReviewWritePage({ product, onBack, userName = "회원", onSubmit
           </h4>
           <textarea
             value={pros}
-            onChange={(e) => setPros(e.target.value)}
+            onChange={(e) => setPros(e.target.value.slice(0, 500))}
             placeholder="이 제품의 좋았던 점을 작성해주세요&#10;&#10;예시:&#10;- 신선한 재료를 사용해서 맛이 좋았어요&#10;- 양이 푸짐해서 만족스러웠습니다&#10;- 포장이 깔끔하고 배달도 빨랐어요"
-            className="w-full h-32 p-4 rounded-[1rem] border-2 border-[#d4c5a0] bg-[#f5f0dc] focus:border-[#6b8e6f] focus:outline-none resize-none"
+            className="w-full h-32 p-4 rounded-[1rem] border-2 border-[#d4c5a0] bg-[#f5f0dc] focus:border-[#6b8e6f] focus:outline-none resize-none transition-colors"
           />
+          <div className="flex justify-end mt-2">
+            <span className={`text-xs ${pros.length > 450 ? 'text-[#e63946]' : 'text-[#9ca89d]'}`}>
+              {pros.length}/500
+            </span>
+          </div>
         </div>
 
         {/* Cons */}
@@ -196,10 +201,15 @@ export function ReviewWritePage({ product, onBack, userName = "회원", onSubmit
           </h4>
           <textarea
             value={cons}
-            onChange={(e) => setCons(e.target.value)}
+            onChange={(e) => setCons(e.target.value.slice(0, 500))}
             placeholder="아쉬웠던 점을 솔직하게 작성해주세요&#10;&#10;예시:&#10;- 조금 짜서 간 조절이 필요할 것 같아요&#10;- 가격 대비 양이 적었어요&#10;- 배달 시간이 예상보다 오래 걸렸어요"
-            className="w-full h-32 p-4 rounded-[1rem] border-2 border-[#d4c5a0] bg-[#f5f0dc] focus:border-[#f5a145] focus:outline-none resize-none"
+            className="w-full h-32 p-4 rounded-[1rem] border-2 border-[#d4c5a0] bg-[#f5f0dc] focus:border-[#f5a145] focus:outline-none resize-none transition-colors"
           />
+          <div className="flex justify-end mt-2">
+            <span className={`text-xs ${cons.length > 450 ? 'text-[#e63946]' : 'text-[#9ca89d]'}`}>
+              {cons.length}/500
+            </span>
+          </div>
         </div>
 
         {/* Suggestions */}
@@ -210,10 +220,15 @@ export function ReviewWritePage({ product, onBack, userName = "회원", onSubmit
           </h4>
           <textarea
             value={suggestions}
-            onChange={(e) => setSuggestions(e.target.value)}
+            onChange={(e) => setSuggestions(e.target.value.slice(0, 500))}
             placeholder="사업자님께 도움이 될 개선 아이디어를 제안해주세요&#10;&#10;예시:&#10;- 소스를 별도로 제공하면 좋을 것 같아요&#10;- 포장 용기가 더 튼튼했으면 해요&#10;- 매운맛 단계를 선택할 수 있으면 좋겠어요"
-            className="w-full h-32 p-4 rounded-[1rem] border-2 border-[#d4c5a0] bg-[#f5f0dc] focus:border-[#f5a145] focus:outline-none resize-none"
+            className="w-full h-32 p-4 rounded-[1rem] border-2 border-[#d4c5a0] bg-[#f5f0dc] focus:border-[#f5a145] focus:outline-none resize-none transition-colors"
           />
+          <div className="flex justify-end mt-2">
+            <span className={`text-xs ${suggestions.length > 450 ? 'text-[#e63946]' : 'text-[#9ca89d]'}`}>
+              {suggestions.length}/500
+            </span>
+          </div>
         </div>
 
         {/* Submit Button */}

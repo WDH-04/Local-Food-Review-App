@@ -42,6 +42,19 @@ export async function requestJson<TReq = any, TRes = any>(opts: RequestOptions<T
       return { response: res, data };
     }
 
+    // Retry legacy path only when route is actually missing.
+    if (res.status !== 404 && res.status !== 405) {
+      const contentType = res.headers.get('content-type');
+      let data: any;
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        data = { error: `Server returned non-JSON response: ${res.status} ${res.statusText}`, details: text.substring(0, 200) };
+      }
+      return { response: res, data };
+    }
+
     // 2) Fallback: handle legacy routes that included function name inside the function
     // e.g., /functions/v1/make-server-98b21042/make-server-98b21042/signin
     res = await fetch(`${base}/make-server-98b21042${path}`, commonInit);

@@ -1,4 +1,5 @@
 node_modules
+<<<<<<< HEAD
 
 # 아래가 추가한 파일들
 # .env      : 환경변수들이다. 
@@ -10,3 +11,8 @@ node_modules
 build/
 dist/
 .DS_Store
+=======
+.env
+.DS_Store
+build
+>>>>>>> 0c77dc6fa86cdac35d24ee39b65e98bd797520e3

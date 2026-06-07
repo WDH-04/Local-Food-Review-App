@@ -26,7 +26,7 @@ export function CreateProductPage({ onBack, onCreateProduct, userInfo }: CreateP
     price: "",
     requiredReviewers: "10",
     deadline: "", // formatted string: MM.DD(요일) - MM.DD(요일)
-    category: "한식",
+    category: "korean",
     detailDescription: "",
     benefits: "",
   });
@@ -196,13 +196,13 @@ export function CreateProductPage({ onBack, onCreateProduct, userInfo }: CreateP
               onChange={handleInputChange}
               className="w-full px-4 py-3 rounded-[1rem] border-2 border-[#d4c5a0] bg-white focus:border-[#f5a145] focus:outline-none"
             >
-              <option value="한식">한식</option>
-              <option value="중식">중식</option>
-              <option value="일식">일식</option>
-              <option value="양식">양식</option>
-              <option value="분식">분식</option>
-              <option value="카페">카페</option>
-              <option value="디저트">디저트</option>
+              <option value="korean">한식</option>
+              <option value="chinese">중식</option>
+              <option value="japanese">일식</option>
+              <option value="western">양식</option>
+              <option value="snack">분식</option>
+              <option value="cafe">카페</option>
+              <option value="dessert">디저트</option>
             </select>
           </div>
 

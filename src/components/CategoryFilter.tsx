@@ -38,7 +38,7 @@ export function CategoryFilter({ selectedCategory, onSelectCategory }: CategoryF
       </div>
       
       {/* Gradient Fade Effect */}
-  <div className="absolute top-0 right-0 w-8 h-full bg-linear-to-l from-[#fffef5] to-transparent pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-[#fffef5] via-[#fffef5]/80 to-transparent pointer-events-none"></div>
     </div>
   );
 }

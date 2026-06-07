@@ -18,7 +18,6 @@ function ImageWithFallback({ src, alt, className }: { src?: string; alt?: string
     />
   );
 }
-import { mockReviews, userProfile } from "../data/mockData";
 import type { UserInfo, Review } from "../App";
 import type { Product } from "../data/mockData";
 import { getLevelInfo, getLevelProgress, getPointsToNextLevel, LEVELS } from "../data/levelSystem";
@@ -472,7 +471,7 @@ export function ProfilePage({
                   name: review.productName,
                   image: review.productImage,
                   seller: "동네식당",
-                  category: "한식",
+                  category: "korean",
                   location: "서울시 마포구",
                   reviewCount: 32,
                   description: review.pros || review.cons || review.improvements,

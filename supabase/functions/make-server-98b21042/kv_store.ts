@@ -14,76 +14,155 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 declare const Deno: any;
 
-const client = () => createClient(
-  Deno.env.get('SUPABASE_URL')!,
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-);
+const client = () =>
+  createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+
+const TABLE_NAME = "kv_store_98b21042";
+const memoryFallback = new Map<string, any>();
+
+const isMissingTableError = (error: unknown): boolean => {
+  const message = error instanceof Error ? error.message : String(error);
+  const lower = message.toLowerCase();
+  return (
+    message.includes(TABLE_NAME) ||
+    lower.includes("schema cache") ||
+    lower.includes("relation") ||
+    lower.includes("does not exist")
+  );
+};
+
+const withMissingTableFallback = async <T>(
+  operation: () => Promise<T>,
+  fallback: () => T | Promise<T>,
+): Promise<T> => {
+  try {
+    return await operation();
+  } catch (error) {
+    if (isMissingTableError(error)) {
+      return await fallback();
+    }
+    throw error;
+  }
+};
 
 // Set stores a key-value pair in the database.
 export const set = async (key: string, value: any): Promise<void> => {
-  const supabase = client()
-  const { error } = await supabase.from("kv_store_98b21042").upsert({
-    key,
-    value
-  });
-  if (error) {
-    throw new Error(error.message);
-  }
+  await withMissingTableFallback(
+    async () => {
+      const supabase = client();
+      const { error } = await supabase.from(TABLE_NAME).upsert({ key, value });
+      if (error) throw new Error(error.message);
+      memoryFallback.set(key, value);
+    },
+    () => {
+      memoryFallback.set(key, value);
+    },
+  );
 };
 
 // Get retrieves a key-value pair from the database.
 export const get = async (key: string): Promise<any> => {
-  const supabase = client()
-  const { data, error } = await supabase.from("kv_store_98b21042").select("value").eq("key", key).maybeSingle();
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data?.value;
+  return await withMissingTableFallback(
+    async () => {
+      const supabase = client();
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select("value")
+        .eq("key", key)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      if (data?.value !== undefined) {
+        memoryFallback.set(key, data.value);
+      }
+      return data?.value ?? memoryFallback.get(key);
+    },
+    () => memoryFallback.get(key),
+  );
 };
 
 // Delete deletes a key-value pair from the database.
 export const del = async (key: string): Promise<void> => {
-  const supabase = client()
-  const { error } = await supabase.from("kv_store_98b21042").delete().eq("key", key);
-  if (error) {
-    throw new Error(error.message);
-  }
+  await withMissingTableFallback(
+    async () => {
+      const supabase = client();
+      const { error } = await supabase.from(TABLE_NAME).delete().eq("key", key);
+      if (error) throw new Error(error.message);
+      memoryFallback.delete(key);
+    },
+    () => {
+      memoryFallback.delete(key);
+    },
+  );
 };
 
 // Sets multiple key-value pairs in the database.
 export const mset = async (keys: string[], values: any[]): Promise<void> => {
-  const supabase = client()
-  const { error } = await supabase.from("kv_store_98b21042").upsert(keys.map((k, i) => ({ key: k, value: values[i] })));
-  if (error) {
-    throw new Error(error.message);
-  }
+  await withMissingTableFallback(
+    async () => {
+      const supabase = client();
+      const payload = keys.map((k, i) => ({ key: k, value: values[i] }));
+      const { error } = await supabase.from(TABLE_NAME).upsert(payload);
+      if (error) throw new Error(error.message);
+      keys.forEach((k, i) => memoryFallback.set(k, values[i]));
+    },
+    () => {
+      keys.forEach((k, i) => memoryFallback.set(k, values[i]));
+    },
+  );
 };
 
 // Gets multiple key-value pairs from the database.
 export const mget = async (keys: string[]): Promise<any[]> => {
-  const supabase = client()
-  const { data, error } = await supabase.from("kv_store_98b21042").select("value").in("key", keys);
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data?.map((d) => d.value) ?? [];
+  return await withMissingTableFallback(
+    async () => {
+      const supabase = client();
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select("key, value")
+        .in("key", keys);
+      if (error) throw new Error(error.message);
+      const byKey = new Map((data ?? []).map((row: any) => [row.key, row.value]));
+      return keys
+        .map((k) => byKey.get(k) ?? memoryFallback.get(k))
+        .filter((v) => v !== undefined);
+    },
+    () => keys.map((k) => memoryFallback.get(k)).filter((v) => v !== undefined),
+  );
 };
 
 // Deletes multiple key-value pairs from the database.
 export const mdel = async (keys: string[]): Promise<void> => {
-  const supabase = client()
-  const { error } = await supabase.from("kv_store_98b21042").delete().in("key", keys);
-  if (error) {
-    throw new Error(error.message);
-  }
+  await withMissingTableFallback(
+    async () => {
+      const supabase = client();
+      const { error } = await supabase.from(TABLE_NAME).delete().in("key", keys);
+      if (error) throw new Error(error.message);
+      keys.forEach((k) => memoryFallback.delete(k));
+    },
+    () => {
+      keys.forEach((k) => memoryFallback.delete(k));
+    },
+  );
 };
 
 // Search for key-value pairs by prefix.
 export const getByPrefix = async (prefix: string): Promise<any[]> => {
-  const supabase = client()
-  const { data, error } = await supabase.from("kv_store_98b21042").select("key, value").like("key", prefix + "%");
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data?.map((d) => d.value) ?? [];
+  return await withMissingTableFallback(
+    async () => {
+      const supabase = client();
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select("key, value")
+        .like("key", prefix + "%");
+      if (error) throw new Error(error.message);
+      return data?.map((d) => d.value) ?? [];
+    },
+    () =>
+      Array.from(memoryFallback.entries())
+        .filter(([key]) => key.startsWith(prefix))
+        .map(([, value]) => value),
+  );
 };

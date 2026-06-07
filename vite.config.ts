@@ -4,7 +4,7 @@
   import path from 'path';
 
   export default defineConfig({
-    base: '/Local-Food-Review-App/',
+    base: process.env.VERCEL ? '/' : '/Local-Food-Review-App/',
     plugins: [react()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],

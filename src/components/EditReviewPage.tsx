@@ -3,7 +3,13 @@ import { ArrowLeft, Upload, X, ThumbsUp, ThumbsDown, Lightbulb } from "lucide-re
 import { toast } from "sonner@2.0.3";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 
-interface Review {
+/**
+ * Lightweight summary of a review used only for the edit-page header.
+ * Intentionally narrower than the canonical `Review` type in App.tsx —
+ * EditReviewPage only needs to display product info and a date, so we
+ * keep this local to avoid pulling in the full review shape.
+ */
+interface EditReviewSummary {
   id: string;
   productName: string;
   productImage: string;
@@ -12,7 +18,7 @@ interface Review {
 }
 
 interface EditReviewPageProps {
-  review: Review;
+  review: EditReviewSummary;
   onBack: () => void;
 }
 

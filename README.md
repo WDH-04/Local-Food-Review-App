@@ -2,7 +2,7 @@
 
 > "우리동네 맛평가단" - 중소 식품 사업자와 소비자를 잇는 솔직한 맛 평가 & 홍보 플랫폼
 
-## ✨ 지금 바로 방문하기 **[🔗 Demo 바로가기](https://duckcchun.github.io/Local-Food-Review-App/)**
+## ✨ 지금 바로 방문하기 **[🔗 Demo 바로가기](https://local-food-review-app.vercel.app/)**
 
 <p align="center">
 

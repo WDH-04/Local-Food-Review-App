@@ -36,6 +36,11 @@ const supabaseAuth = createClient(
   Deno.env.get('SUPABASE_ANON_KEY') ?? '',
 );
 
+const isMissingKvTableError = (error: unknown): boolean => {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes("kv_store_98b21042");
+};
+
 // Health check endpoint
 // NOTE: Removed duplicate function name prefix from all routes.
 app.get("/health", (c: { json: (arg0: { status: string; }) => any; }) => {
@@ -52,8 +57,16 @@ app.post("/signup", async (c: { req: { json: () => any; }; json: (arg0: { error?
       return c.json({ error: "필수 정보를 모두 입력해주세요" }, 400);
     }
 
-    // Check if user already exists
-    const existingUser = await kv.get(`user:${email}`);
+    // Check if user already exists (KV table may not exist on newly linked projects)
+    let existingUser: any = null;
+    try {
+      existingUser = await kv.get(`user:${email}`);
+    } catch (error) {
+      if (!isMissingKvTableError(error)) {
+        throw error;
+      }
+      console.log("KV table not found during signup; continuing without KV check");
+    }
     if (existingUser) {
       return c.json({ error: "이미 존재하는 이메일입니다" }, 400);
     }
@@ -85,8 +98,15 @@ app.post("/signup", async (c: { req: { json: () => any; }; json: (arg0: { error?
       createdAt: new Date().toISOString(),
     };
 
-    await kv.set(`user:${email}`, userData);
-    await kv.set(`user:id:${authData.user.id}`, userData);
+    try {
+      await kv.set(`user:${email}`, userData);
+      await kv.set(`user:id:${authData.user.id}`, userData);
+    } catch (error) {
+      if (!isMissingKvTableError(error)) {
+        throw error;
+      }
+      console.log("KV table not found during signup; returning auth-backed user data");
+    }
 
     return c.json({ 
       success: true, 
@@ -133,11 +153,29 @@ app.post("/signin", async (c: { req: { json: () => Promise<SignInRequest> }; jso
       return c.json({ error: "이메일 또는 비밀번호가 올바르지 않습니다" }, 401);
     }
 
-    // Get user data from KV store
-    const userData = await kv.get(`user:${email}`);
-    
+    let userData: any = null;
+    try {
+      userData = await kv.get(`user:${email}`);
+    } catch (error) {
+      if (!isMissingKvTableError(error)) {
+        throw error;
+      }
+      console.log("KV table not found during signin; using auth metadata fallback");
+    }
+
     if (!userData) {
-      return c.json({ error: "사용자 정보를 찾을 수 없습니다" }, 404);
+      const authUser = signInData.user;
+      userData = {
+        id: authUser.id,
+        email: authUser.email,
+        name: authUser.user_metadata?.name ?? "",
+        phone: authUser.user_metadata?.phone ?? "",
+        userType: authUser.user_metadata?.userType ?? "reviewer",
+        businessName: null,
+        businessNumber: null,
+        businessAddress: null,
+        createdAt: authUser.created_at,
+      };
     }
 
     const response: SignInResponse = {
@@ -170,10 +208,28 @@ app.get("/profile", async (c: { req: { header: (arg0: string) => string; }; json
       return c.json({ error: "유효하지 않은 토큰입니다" }, 401);
     }
 
-    const userData = await kv.get(`user:id:${user.id}`);
-    
+    let userData: any = null;
+    try {
+      userData = await kv.get(`user:id:${user.id}`);
+    } catch (error) {
+      if (!isMissingKvTableError(error)) {
+        throw error;
+      }
+      console.log("KV table not found during profile; using auth metadata fallback");
+    }
+
     if (!userData) {
-      return c.json({ error: "사용자 정보를 찾을 수 없습니다" }, 404);
+      userData = {
+        id: user.id,
+        email: user.email,
+        name: user.user_metadata?.name ?? "",
+        phone: user.user_metadata?.phone ?? "",
+        userType: user.user_metadata?.userType ?? "reviewer",
+        businessName: null,
+        businessNumber: null,
+        businessAddress: null,
+        createdAt: user.created_at,
+      };
     }
 
     return c.json({ success: true, user: userData }, 200);

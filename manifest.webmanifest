@@ -1,7 +1,7 @@
 {
   "name": "밥터뷰 | 로컬 맛집 체험단",
   "short_name": "밥터뷰",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#fffef5",
   "theme_color": "#6b8e6f",

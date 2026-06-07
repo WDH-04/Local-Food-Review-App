@@ -9,41 +9,36 @@ interface BottomNavProps {
 export function BottomNav({ activeTab, onTabChange, userType }: BottomNavProps) {
   const isBusiness = userType === "business";
 
+  const NavButton = ({ tab, icon: Icon, label }: { tab: "home" | "review" | "profile"; icon: typeof Home; label: string }) => {
+    const isActive = activeTab === tab;
+    return (
+      <button
+        onClick={() => onTabChange(tab)}
+        className={`relative flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all duration-200 active:scale-90 ${
+          isActive 
+            ? "text-[#6b8e6f] bg-[#6b8e6f]/10" 
+            : "text-[#9ca89d] hover:text-[#6b8e6f]"
+        }`}
+      >
+        {/* 상단 인디케이터 바 */}
+        <div className={`absolute -top-1 left-1/2 -translate-x-1/2 h-[3px] rounded-full transition-all duration-300 ${
+          isActive ? "w-6 bg-[#6b8e6f]" : "w-0 bg-transparent"
+        }`} />
+        <Icon size={22} fill={isActive ? "#6b8e6f" : "none"} strokeWidth={isActive ? 2.5 : 2} />
+        <span className={`text-xs transition-all ${isActive ? "font-semibold" : "font-normal"}`}>{label}</span>
+      </button>
+    );
+  };
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-[#6b8e6f] rounded-t-[2rem] shadow-lg z-50">
-      <div className="max-w-md mx-auto px-6 py-4">
-        <div className={`flex items-center ${isBusiness ? 'justify-around' : 'justify-around'}`}>
-          <button
-            onClick={() => onTabChange("home")}
-            className={`flex flex-col items-center gap-1.5 transition-colors ${
-              activeTab === "home" ? "text-[#6b8e6f]" : "text-[#9ca89d]"
-            }`}
-          >
-            <Home size={24} fill={activeTab === "home" ? "#6b8e6f" : "none"} />
-            <span className="text-sm">홈</span>
-          </button>
-          
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#d4c5a0] rounded-t-[1.5rem] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-50 pb-[env(safe-area-inset-bottom)]">
+      <div className="max-w-md mx-auto px-4 py-3">
+        <div className="flex items-center justify-around">
+          <NavButton tab="home" icon={Home} label="홈" />
           {!isBusiness && (
-            <button
-              onClick={() => onTabChange("review")}
-              className={`flex flex-col items-center gap-1.5 transition-colors ${
-                activeTab === "review" ? "text-[#6b8e6f]" : "text-[#9ca89d]"
-              }`}
-            >
-              <FileText size={24} fill={activeTab === "review" ? "#6b8e6f" : "none"} />
-              <span className="text-sm">리뷰 작성</span>
-            </button>
+            <NavButton tab="review" icon={FileText} label="리뷰" />
           )}
-          
-          <button
-            onClick={() => onTabChange("profile")}
-            className={`flex flex-col items-center gap-1.5 transition-colors ${
-              activeTab === "profile" ? "text-[#6b8e6f]" : "text-[#9ca89d]"
-            }`}
-          >
-            <User size={24} fill={activeTab === "profile" ? "#6b8e6f" : "none"} />
-            <span className="text-sm">내 페이지</span>
-          </button>
+          <NavButton tab="profile" icon={User} label="MY" />
         </div>
       </div>
     </nav>

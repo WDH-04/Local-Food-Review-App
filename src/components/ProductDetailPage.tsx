@@ -1,6 +1,7 @@
 import { ArrowLeft, MapPin, Heart, ThumbsUp, Share2, Calendar, Users, Star } from "lucide-react";
 import type { Product } from "../data/mockData";
 import type { Review } from "../App";
+import { getCategoryName } from "../data/categories";
 
 // Simple ImageWithFallback component to avoid missing module error
 function ImageWithFallback({
@@ -171,7 +172,7 @@ export function ProductDetailPage({
                   </button>
                 </div>
               </div>
-              <div className="text-sm text-[#6b8e6f]">{product.category}</div>
+              <div className="text-sm text-[#6b8e6f]">{getCategoryName(product.category)}</div>
             </div>
           </div>
 
@@ -284,15 +285,15 @@ export function ProductDetailPage({
                 className="w-full bg-[#9ca89d] text-white py-4 rounded-[1rem] opacity-80 cursor-not-allowed"
                 title="이미 신청되었습니다"
               >
-                신청 완료됨
+                ✅ 신청 완료됨
               </button>
             )
           ) : (
             <button
               onClick={onApply}
-              className="w-full bg-[#f5a145] text-white py-4 rounded-[1rem] hover:bg-[#e89535] transition-colors text-center"
+              className="w-full bg-linear-to-r from-[#f5a145] to-[#e89535] text-white py-4 rounded-[1.5rem] hover:opacity-90 transition-all active:scale-[0.97] text-center font-medium shadow-lg shadow-[#f5a145]/25"
             >
-              체험단 신청하기
+              체험단 신청하기 ({product.currentApplicants}/{product.requiredReviewers}명)
             </button>
           )}
         </div>

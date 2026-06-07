@@ -161,8 +161,14 @@ export function LoginPage({ onBack, onLoginComplete, onSwitchToSignup }: LoginPa
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-linear-to-r from-[#6b8e6f] to-[#8fa893] text-white py-4 rounded-[1.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 text-center"
+              className="w-full bg-linear-to-r from-[#6b8e6f] to-[#8fa893] text-white py-4 rounded-[1.5rem] hover:opacity-90 transition-all disabled:opacity-60 text-center flex items-center justify-center gap-2"
             >
+              {isLoading && (
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+              )}
               {isLoading ? "로그인 중..." : "로그인"}
             </button>
 
