@@ -1,18 +1,4 @@
 node_modules
-<<<<<<< HEAD
-
-# 아래가 추가한 파일들
-# .env      : 환경변수들이다. 
-# build/    : React를 빌드하면 나오는 폴더이다.
-# dist/     : npm run build를 하면 나오는 폴더이다.
-# .DS_Store : Mac에서 나오는 파일이다.(난 Windows라 나오지 않는다.)
-
-.env
-build/
-dist/
-.DS_Store
-=======
 .env
 .DS_Store
 build
->>>>>>> 0c77dc6fa86cdac35d24ee39b65e98bd797520e3
